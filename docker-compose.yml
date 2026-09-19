@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: talentsync-postgres
+    environment:
+      POSTGRES_DB: talentsync
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - talentsync-data:/var/lib/postgresql/data
+
+volumes:
+  talentsync-data:
