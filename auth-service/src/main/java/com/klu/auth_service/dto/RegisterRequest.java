@@ -1,2 +1,2 @@
 package com.klu.auth_service.dto;
-public record RegisterRequest(String name, String email, String password, String role) { }
+public record RegisterRequest(String name, String email, String password) { }
