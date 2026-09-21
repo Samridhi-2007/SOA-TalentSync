@@ -77,3 +77,81 @@ export function uploadCandidateResume(email, file) {
     body: formData,
   }, true)
 }
+
+// ==================== Recruiter APIs ====================
+
+export function recruiterLogin(data) {
+  return jsonRequest('/api/auth/login', 'POST', data)
+}
+
+export function recruiterRegister(data) {
+  return jsonRequest('/api/auth/register', 'POST', data)
+}
+
+export function getRecruiterJobs(email) {
+  return request(
+    `/api/jobs/recruiter/${encodeURIComponent(email)}`,
+    {},
+    true
+  )
+}
+
+export function createJob(data) {
+  return jsonRequest('/api/jobs', 'POST', data, true)
+}
+
+export function getRecruiterJobById(id) {
+  return request(`/api/jobs/${encodeURIComponent(id)}`, {}, true)
+}
+
+export function updateJob(id, data) {
+  return jsonRequest(
+    `/api/jobs/${encodeURIComponent(id)}`,
+    'PUT',
+    data,
+    true
+  )
+}
+
+export function deleteJob(id) {
+  return request(
+    `/api/jobs/${encodeURIComponent(id)}`,
+    { method: 'DELETE' },
+    true
+  )
+}
+
+export function getJobApplications(jobId) {
+  return request(
+    `/api/applications/job/${encodeURIComponent(jobId)}`,
+    {},
+    true
+  )
+}
+
+export function updateApplicationStatus(id, value) {
+  return request(
+    `/api/applications/${encodeURIComponent(id)}/status?value=${encodeURIComponent(value)}`,
+    { method: 'PUT' },
+    true
+  )
+}
+
+export function getRecruitmentPipeline() {
+  return request('/api/recruitment/pipeline', {}, true)
+}
+
+export function getRecruiterStatistics(email) {
+  return request(
+    `/api/recruitment/statistics/${encodeURIComponent(email)}`,
+    {},
+    true
+  )
+}
+export function requestRecruiterAccess() {
+  return request(
+    '/api/auth/recruiter-request',
+    { method: 'PUT' },
+    true
+  )
+}
