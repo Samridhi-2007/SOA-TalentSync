@@ -43,6 +43,11 @@ public class User {
         this.role = role;
     }
 
+    public User(String name, String email, String password, String role, boolean approved) {
+        this(name, email, password, role);
+        this.approved = approved;
+    }
+
     public String getName() { return name; }
     public String getEmail() { return email; }
     public String getPassword() { return password; }
