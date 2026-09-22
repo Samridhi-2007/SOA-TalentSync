@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import feign.FeignException;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ApplicationService {
@@ -57,7 +58,68 @@ public class ApplicationService {
         application.setStatus(status);
         return applications.save(application);
     }
+public Map<String, Long> recruiterStatistics(String recruiterEmail) {
 
+    if (recruiterEmail == null || recruiterEmail.isBlank()) {
+        throw new IllegalArgumentException(
+                "Recruiter email is required"
+        );
+    }
+
+    List<JobSummary> recruiterJobs =
+            jobs.getRecruiterJobs(recruiterEmail);
+
+    List<Long> jobIds = recruiterJobs.stream()
+            .map(JobSummary::id)
+            .toList();
+
+    if (jobIds.isEmpty()) {
+        return Map.of(
+                "totalJobs", 0L,
+                "openJobs", 0L,
+                "totalApplications", 0L,
+                "shortlistedCandidates", 0L,
+                "interviews", 0L,
+                "hiredCandidates", 0L
+        );
+    }
+
+    long totalJobs = recruiterJobs.size();
+
+    long openJobs = recruiterJobs.stream()
+            .filter(job -> "OPEN".equalsIgnoreCase(job.status()))
+            .count();
+
+    long totalApplications =
+            applications.countByJobIdIn(jobIds);
+
+    long shortlistedCandidates =
+            applications.countByJobIdInAndStatus(
+                    jobIds,
+                    "SHORTLISTED"
+            );
+
+    long interviews =
+            applications.countByJobIdInAndStatus(
+                    jobIds,
+                    "INTERVIEW"
+            );
+
+    long hiredCandidates =
+            applications.countByJobIdInAndStatus(
+                    jobIds,
+                    "HIRED"
+            );
+
+    return Map.of(
+            "totalJobs", totalJobs,
+            "openJobs", openJobs,
+            "totalApplications", totalApplications,
+            "shortlistedCandidates", shortlistedCandidates,
+            "interviews", interviews,
+            "hiredCandidates", hiredCandidates
+    );
+}
     private void validateApplication(Application application) {
         if (application == null || application.getJobId() == null || application.getJobTitle() == null
                 || application.getJobTitle().isBlank() || application.getCandidate() == null

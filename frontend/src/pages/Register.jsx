@@ -13,11 +13,24 @@ function storeUser(response, form) {
   if (response?.name || form.name) {
     localStorage.setItem('userName', response?.name || form.name)
   }
+
+  if (response?.role) {
+    localStorage.setItem('userRole', response.role)
+  }
+
+  localStorage.setItem(
+    'approved',
+    String(response?.approved ?? false)
+  )
 }
 
 export default function Register() {
   const navigate = useNavigate()
-  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'CANDIDATE' })
+ const [form, setForm] = useState({
+  name: '',
+  email: '',
+  password: ''
+})
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -63,10 +76,6 @@ export default function Register() {
           <label>
             Password
             <input name="password" type="password" value={form.password} onChange={updateField} required autoComplete="new-password" style={{ display: 'block', width: '100%', marginTop: '7px', padding: '12px', border: '1px solid #cbd8ca', borderRadius: '8px' }} />
-          </label>
-          <label>
-            Role
-            <input name="role" value={form.role} readOnly style={{ display: 'block', width: '100%', marginTop: '7px', padding: '12px', border: '1px solid #cbd8ca', borderRadius: '8px', background: '#f2f5ed' }} />
           </label>
 
           {error && <p role="alert" style={{ color: '#a33a32', margin: 0 }}>{error}</p>}

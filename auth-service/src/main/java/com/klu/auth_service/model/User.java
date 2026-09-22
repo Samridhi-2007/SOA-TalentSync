@@ -1,6 +1,13 @@
 package com.klu.auth_service.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
@@ -16,15 +23,19 @@ public class User {
     private String email;
 
     private String password;
+
     private String role;
 
-    // Existing recruiter fields
+    // Recruiter access fields
     private boolean approved;
+
     private boolean recruiterRequested;
 
     // Candidate profile fields
     private String phone;
+
     private String skills;
+
     private String location;
 
     @Basic(fetch = FetchType.LAZY)
@@ -32,10 +43,14 @@ public class User {
     private byte[] resumeData;
 
     private String resumeFileName;
+
     private String resumeContentType;
 
-    protected User() {}
+    // Required by JPA
+    protected User() {
+    }
 
+    // Existing constructor
     public User(String name, String email, String password, String role) {
         this.name = name;
         this.email = email;
@@ -43,32 +58,102 @@ public class User {
         this.role = role;
     }
 
-    public String getName() { return name; }
-    public String getEmail() { return email; }
-    public String getPassword() { return password; }
-    public String getRole() { return role; }
+    // Constructor used when creating the default admin
+    public User(String name, String email, String password, String role, boolean approved) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.approved = approved;
+    }
 
-    public boolean isApproved() { return approved; }
-    public boolean isRecruiterRequested() { return recruiterRequested; }
+    // Getters
+    public String getName() {
+        return name;
+    }
 
-    public String getPhone() { return phone; }
-    public String getSkills() { return skills; }
-    public String getLocation() { return location; }
+    public String getEmail() {
+        return email;
+    }
 
-    public byte[] getResumeData() { return resumeData; }
-    public String getResumeFileName() { return resumeFileName; }
-    public String getResumeContentType() { return resumeContentType; }
+    public String getPassword() {
+        return password;
+    }
 
-    public void setName(String value) { name = value; }
-    public void setRole(String role) { this.role = role; }
-    public void setApproved(boolean approved) { this.approved = approved; }
-    public void setRecruiterRequested(boolean requested) { recruiterRequested = requested; }
+    public String getRole() {
+        return role;
+    }
 
-    public void setPhone(String value) { phone = value; }
-    public void setSkills(String value) { skills = value; }
-    public void setLocation(String value) { location = value; }
+    public boolean isApproved() {
+        return approved;
+    }
 
-    public void setResumeData(byte[] value) { resumeData = value; }
-    public void setResumeFileName(String value) { resumeFileName = value; }
-    public void setResumeContentType(String value) { resumeContentType = value; }
+    public boolean isRecruiterRequested() {
+        return recruiterRequested;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getSkills() {
+        return skills;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public byte[] getResumeData() {
+        return resumeData;
+    }
+
+    public String getResumeFileName() {
+        return resumeFileName;
+    }
+
+    public String getResumeContentType() {
+        return resumeContentType;
+    }
+
+    // Setters
+    public void setName(String value) {
+        name = value;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public void setApproved(boolean approved) {
+        this.approved = approved;
+    }
+
+    public void setRecruiterRequested(boolean requested) {
+        recruiterRequested = requested;
+    }
+
+    public void setPhone(String value) {
+        phone = value;
+    }
+
+    public void setSkills(String value) {
+        skills = value;
+    }
+
+    public void setLocation(String value) {
+        location = value;
+    }
+
+    public void setResumeData(byte[] value) {
+        resumeData = value;
+    }
+
+    public void setResumeFileName(String value) {
+        resumeFileName = value;
+    }
+
+    public void setResumeContentType(String value) {
+        resumeContentType = value;
+    }
 }

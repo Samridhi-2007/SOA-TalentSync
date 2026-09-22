@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { candidateLogin } from '../services/api'
 import '../../src/App.css'
-
 function storeUser(response, email) {
   if (response?.token) {
     localStorage.setItem('token', response.token)
@@ -13,6 +12,15 @@ function storeUser(response, email) {
   if (response?.name) {
     localStorage.setItem('userName', response.name)
   }
+
+  if (response?.role) {
+    localStorage.setItem('userRole', response.role)
+  }
+
+  localStorage.setItem(
+    'approved',
+    String(response?.approved ?? false)
+  )
 }
 
 export default function Login() {
@@ -33,7 +41,15 @@ export default function Login() {
     try {
       const response = await candidateLogin(form)
       storeUser(response, form.email)
-      navigate('/candidate/dashboard')
+
+if (response?.role === 'RECRUITER') {
+  navigate('/recruiter/dashboard')
+} else if (response?.role === 'ADMIN') {
+  // Admin routing can be added later.
+  navigate('/candidate/dashboard')
+} else {
+  navigate('/candidate/dashboard')
+}
     } catch (requestError) {
       setError(requestError.message || 'Unable to log in. Please try again.')
     } finally {
