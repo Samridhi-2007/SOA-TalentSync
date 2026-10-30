@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { getCandidateProfile, updateCandidateProfile, uploadCandidateResume } from '../../services/api'
+import { Link, useNavigate } from 'react-router-dom'
+import { getCandidateProfile, getCurrentUserRole, requestRecruiterAccess, updateCandidateProfile, uploadCandidateResume } from '../../services/api'
 
 const emptyForm = { name: '', phone: '', skills: '', location: '' }
 
 export default function Profile() {
+  const navigate = useNavigate()
   const [profile, setProfile] = useState(null)
   const [form, setForm] = useState(emptyForm)
   const [file, setFile] = useState(null)
@@ -17,6 +18,9 @@ export default function Profile() {
   const [saveError, setSaveError] = useState('')
   const [uploadMessage, setUploadMessage] = useState('')
   const [uploadError, setUploadError] = useState('')
+  const [requestingRecruiter, setRequestingRecruiter] = useState(false)
+  const [recruiterRequestMessage, setRecruiterRequestMessage] = useState('')
+  const [recruiterRequestError, setRecruiterRequestError] = useState('')
 
   useEffect(() => {
     const email = localStorage.getItem('userEmail')
@@ -103,6 +107,29 @@ export default function Profile() {
     }
   }
 
+  const handleRecruiterRequest = async () => {
+    setRequestingRecruiter(true)
+    setRecruiterRequestError('')
+    setRecruiterRequestMessage('')
+    try {
+      const response = await requestRecruiterAccess()
+      setProfile((current) => ({ ...current, recruiterRequested: true }))
+      setRecruiterRequestMessage(response?.message || 'Recruiter access request sent for admin approval.')
+    } catch (requestError) {
+      setRecruiterRequestError(requestError.message || 'Unable to request recruiter access.')
+    } finally {
+      setRequestingRecruiter(false)
+    }
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('userEmail')
+    localStorage.removeItem('userName')
+    localStorage.removeItem('userRole')
+    navigate('/home', { replace: true })
+  }
+
   const email = profile?.email || localStorage.getItem('userEmail') || ''
 
   return (
@@ -114,6 +141,7 @@ export default function Profile() {
           <Link to="/candidate/jobs">Jobs</Link>
           <Link to="/candidate/applications">Applications</Link>
           <Link to="/candidate/profile">Profile</Link>
+          <button type="button" className="outline" onClick={handleLogout} style={{ padding: '8px 14px' }}>Log out</button>
         </nav>
       </header>
 
@@ -164,6 +192,18 @@ export default function Profile() {
                   <input name="location" value={form.location} onChange={updateField} disabled={!editing} style={{ display: 'block', width: '100%', marginTop: '7px', padding: '12px', border: '1px solid #cbd8ca', borderRadius: '8px', background: editing ? '#ffffff' : '#f2f5ed' }} />
                 </label>
               </div>
+
+              {getCurrentUserRole() === 'JOB_SEEKER' && (
+                <section style={{ marginTop: '28px', paddingTop: '22px', borderTop: '1px solid #e1e8df' }}>
+                  <p className="eyebrow">RECRUITER ACCESS</p>
+                  <p style={{ color: '#637169', lineHeight: 1.6 }}>Request recruiter access to create job listings and manage applications. An admin must approve the request.</p>
+                  {profile.recruiterRequested
+                    ? <p role="status" style={{ color: '#587915' }}>Your recruiter access request is pending admin review.</p>
+                    : <button type="button" onClick={handleRecruiterRequest} disabled={requestingRecruiter}>{requestingRecruiter ? 'Sending request...' : 'Request recruiter access'}</button>}
+                  {recruiterRequestMessage && <p role="status" style={{ color: '#587915' }}>{recruiterRequestMessage}</p>}
+                  {recruiterRequestError && <p role="alert" style={{ color: '#a33a32' }}>{recruiterRequestError}</p>}
+                </section>
+              )}
 
               {editing && <button type="button" onClick={handleSave} disabled={saving} style={{ marginTop: '22px', opacity: saving ? 0.6 : 1 }}>{saving ? 'Saving...' : 'Save profile'}</button>}
               {saveMessage && <p role="status" style={{ color: '#587915' }}>{saveMessage}</p>}

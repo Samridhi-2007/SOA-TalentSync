@@ -12,9 +12,10 @@ public class GatewayRoutes {
         return builder.routes()
                 .route("auth-service", r -> r.path("/api/auth/**").uri("lb://auth-service"))
                 .route("admin-service", r -> r.path("/api/admin/**").uri("lb://auth-service"))
+                .route("candidate-profile", r -> r.path("/api/candidates/**").uri("lb://auth-service"))
                 .route("job-service", r -> r.path("/api/jobs/**").uri("lb://job-service"))
                 .route("application-service", r -> r.path("/api/applications/**").uri("lb://application-service"))
-                .route("recruitment-pipeline", r -> r.path("/api/recruitment/**").uri("lb://application-service"))
+                .route("recruitment-service", r -> r.path("/api/recruitment/**").uri("lb://recruitement-service"))
                 .build();
     }
 }

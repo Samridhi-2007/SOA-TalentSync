@@ -3,9 +3,11 @@ package com.klu.auth_service.service;
 import com.klu.auth_service.dto.CandidateProfileResponse;
 import com.klu.auth_service.dto.CandidateProfileUpdateRequest;
 import com.klu.auth_service.dto.ResumeUploadResponse;
+import com.klu.auth_service.dto.ResumeFile;
 import com.klu.auth_service.model.User;
 import com.klu.auth_service.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -57,12 +59,24 @@ public class CandidateService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public ResumeFile getResume(String email) {
+        User user = users.findByEmailIgnoreCase(email);
+        if (user == null) {
+            throw new IllegalArgumentException("Candidate not found");
+        }
+        if (user.getResumeData() == null || user.getResumeData().length == 0) {
+            throw new IllegalArgumentException("Resume not found");
+        }
+        return new ResumeFile(user.getResumeData(), user.getResumeFileName(), user.getResumeContentType());
+    }
+
     private User findCandidate(String email) {
         User user = users.findByEmailIgnoreCase(email);
         if (user == null) {
             throw new IllegalArgumentException("Candidate not found");
         }
-        if (!"CANDIDATE".equalsIgnoreCase(user.getRole())) {
+        if (!"JOB_SEEKER".equalsIgnoreCase(user.getRole()) && !"CANDIDATE".equalsIgnoreCase(user.getRole())) {
             throw new IllegalArgumentException("The account is not a candidate account");
         }
         return user;
@@ -74,7 +88,8 @@ public class CandidateService {
                 user.getEmail(),
                 user.getPhone(),
                 user.getSkills(),
-                user.getLocation()
+                user.getLocation(),
+                user.isRecruiterRequested()
         );
     }
 }

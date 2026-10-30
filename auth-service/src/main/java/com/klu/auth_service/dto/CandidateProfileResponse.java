@@ -5,6 +5,7 @@ public record CandidateProfileResponse(
         String email,
         String phone,
         String skills,
-        String location
+        String location,
+        boolean recruiterRequested
 ) {
 }

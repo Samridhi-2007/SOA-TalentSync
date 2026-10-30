@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import feign.FeignException;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 public class ApplicationService {
@@ -55,6 +56,16 @@ public class ApplicationService {
         Application application = applications.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Application not found"));
         application.setStatus(status);
+        return applications.save(application);
+    }
+
+    public Application updateInterviewTime(Long id, LocalDateTime interviewAt) {
+        if (interviewAt == null) {
+            throw new IllegalArgumentException("Interview time is required");
+        }
+        Application application = applications.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Application not found"));
+        application.setInterviewAt(interviewAt);
         return applications.save(application);
     }
 

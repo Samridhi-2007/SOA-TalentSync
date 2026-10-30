@@ -8,7 +8,7 @@ Simple microservices project for job posting and recruitment tracking.
 2. Auth Service - `8081`
 3. Job Service - `8082`
 4. Application Service - `8083`
-5. Recruitment Service - `8084`
+5. Recruitment Service - `8084` (pipeline aggregation)
 6. API Gateway - `8085`
 
 User, job, and application data is stored in PostgreSQL. The default connection is `localhost:5432`, database `talentsync`, username `postgres`, password `postgres`. You can change it with `DB_URL`, `DB_USERNAME`, and `DB_PASSWORD` environment variables.
@@ -57,8 +57,13 @@ POST /api/auth/register
 POST /api/auth/login
 GET  /api/jobs
 POST /api/jobs
+PUT  /api/jobs/{id}
+DELETE /api/jobs/{id}
 GET  /api/applications
 POST /api/applications
+PUT  /api/applications/{id}/status?value=INTERVIEW
+PUT  /api/applications/{id}/interview?value=2026-11-01T10:30:00
+GET  /api/candidates/{email}/resume
 GET  /api/recruitment/pipeline
 ```
 
@@ -66,7 +71,7 @@ JWT tokens are returned by register/login. The signing key is in `auth-service/s
 
 ## Role-based access
 
-New registrations are always created as approved `JOB_SEEKER` accounts and can log in immediately. A job seeker can request recruiter access from Settings; an admin must approve that request. No role dropdown is shown during signup.
+New registrations are always created as approved `JOB_SEEKER` accounts and can log in immediately. A job seeker can request recruiter access from their profile or with `PUT /api/auth/recruiter-request`; an admin can approve or decline requests from `/admin/users`. No role dropdown is shown during signup. Approved recruiters and admins can manage jobs at `/recruiter/jobs` and applications at `/recruiter/applications` in the frontend.
 
 Default admin login:
 
@@ -99,7 +104,7 @@ TalentSync supports corporate job posting, candidate applications, application s
 | Auth Service | 8081 | Users, BCrypt passwords, JWT, RBAC, admin approval |
 | Job Service | 8082 | PostgreSQL job CRUD |
 | Application Service | 8083 | PostgreSQL applications and pipeline counts |
-| Recruitment Service | 8084 | Recruitment health service |
+| Recruitment Service | 8084 | Recruitment health and pipeline aggregation through Application Service |
 | API Gateway | 8085 | Routing, CORS, Eureka load balancing, JWT authorization |
 
 ### 3. JWT and RBAC
@@ -111,7 +116,7 @@ Auth Service creates signed JWT tokens. The Gateway validates the token before f
 | Register/login/jobs list/pipeline | Public |
 | Create/update/delete job | RECRUITER or ADMIN |
 | Submit application | JOB_SEEKER |
-| Change application status | RECRUITER or ADMIN |
+| List applications, change application status, schedule interviews, view applicant resumes | RECRUITER or ADMIN |
 | Admin user approval | ADMIN |
 | Request recruiter access | JOB_SEEKER |
 

@@ -9,6 +9,7 @@ function storeUser(response, email) {
   }
 
   localStorage.setItem('userEmail', response?.email || email)
+  if (response?.role) localStorage.setItem('userRole', response.role)
 
   if (response?.name) {
     localStorage.setItem('userName', response.name)
@@ -33,7 +34,7 @@ export default function Login() {
     try {
       const response = await candidateLogin(form)
       storeUser(response, form.email)
-      navigate('/candidate/dashboard')
+      navigate(response?.role === 'ADMIN' ? '/admin/users' : response?.role === 'RECRUITER' ? '/recruiter/applications' : '/candidate/dashboard')
     } catch (requestError) {
       setError(requestError.message || 'Unable to log in. Please try again.')
     } finally {

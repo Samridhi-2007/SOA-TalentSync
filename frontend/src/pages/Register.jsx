@@ -9,6 +9,7 @@ function storeUser(response, form) {
   }
 
   localStorage.setItem('userEmail', response?.email || form.email)
+  if (response?.role) localStorage.setItem('userRole', response.role)
 
   if (response?.name || form.name) {
     localStorage.setItem('userName', response?.name || form.name)
@@ -17,7 +18,7 @@ function storeUser(response, form) {
 
 export default function Register() {
   const navigate = useNavigate()
-  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'CANDIDATE' })
+  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'JOB_SEEKER' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')

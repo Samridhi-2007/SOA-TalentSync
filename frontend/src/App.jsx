@@ -9,11 +9,20 @@ import Jobs from './pages/candidate/Jobs'
 import Profile from './pages/candidate/Profile'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import RecruiterApplications from './pages/recruiter/Applications'
+import RecruiterJobs from './pages/recruiter/Jobs'
+import RecruiterProfile from './pages/recruiter/Profile'
+import AdminUsers from './pages/admin/Users'
+import { getCurrentUserRole } from './services/api'
+import Home from './pages/Home'
 
 function RootRedirect() {
+  const role = getCurrentUserRole()
   return (
     <Navigate
-      to={localStorage.getItem('token') ? '/candidate/dashboard' : '/login'}
+      to={localStorage.getItem('token')
+        ? (role === 'ADMIN' ? '/admin/users' : role === 'RECRUITER' ? '/recruiter/applications' : '/candidate/dashboard')
+        : '/home'}
       replace
     />
   )
@@ -24,6 +33,7 @@ function AppRoutes() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<RootRedirect />} />
+        <Route path="/home" element={<Home />} />
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -52,6 +62,26 @@ function AppRoutes() {
           <Route
             path="/candidate/profile"
             element={<Profile />}
+          />
+
+          <Route
+            path="/recruiter/applications"
+            element={<RecruiterApplications />}
+          />
+
+          <Route
+            path="/recruiter/jobs"
+            element={<RecruiterJobs />}
+          />
+
+          <Route
+            path="/recruiter/profile"
+            element={<RecruiterProfile />}
+          />
+
+          <Route
+            path="/admin/users"
+            element={<AdminUsers />}
           />
         </Route>
 

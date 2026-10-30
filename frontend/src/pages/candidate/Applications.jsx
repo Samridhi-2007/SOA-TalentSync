@@ -102,6 +102,7 @@ export default function Applications() {
                       {application.candidate && ` · ${application.candidate}`}
                     </p>
                     {formatDate(application) && <small style={{ color: '#8a968d' }}>Applied {formatDate(application)}</small>}
+                    {application.interviewAt && <p style={{ color: '#587915', margin: '8px 0 0' }}>Interview scheduled: {formatDate({ submittedAt: application.interviewAt })}</p>}
                     {application.id && <small style={{ color: '#8a968d' }}>Application ID: {application.id}</small>}
                   </div>
                   <span className={statusClass(status)} style={{ background: '#e9f3c4', color: '#69880d', borderRadius: '20px', padding: '8px 13px', fontSize: '12px', fontWeight: 700 }}>
